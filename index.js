@@ -35,8 +35,7 @@ function playRound(playerSelection, computerSelection) {
       playerSelection
     )}`;
   }
-  console.log(message);
-  return [playerPoint, computerPoint];
+  return [playerPoint, computerPoint, message];
 }
 
 function doesLeftBeatRight(left, right) {
@@ -52,25 +51,42 @@ function doesLeftBeatRight(left, right) {
   }
 }
 
-function game() {
-  let playerCount = 0;
-  let computerCount = 0;
-  let message;
-  for (let i = 0; i < 5; i++) {
-    const playerSelection = prompt("Choose your play");
-    const computerSelection = getComputerChoice();
-    const results = playRound(playerSelection, computerSelection);
-    playerCount += results[0];
-    computerCount += results[1];
-  }
-  if (playerCount > computerCount) {
-    message = `You beat the computer ${playerCount} to ${computerCount}.`;
-  } else if (computerCount > playerCount) {
-    message = `The computer beat you ${computerCount} to ${playerCount}.`;
-  } else {
-    message = `You tied with the computer at ${playerCount} points.`;
-  }
-  console.log(message);
-}
+let playerCount = 0;
+let computerCount = 0;
+let message;
+let gameOver = false;
 
-game();
+addEventListener("DOMContentLoaded", (event) => {
+  const buttons = document.querySelectorAll("button.rps-option-btn");
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+      if (gameOver) return;
+      console.log(2);
+      const playerSelection = this.id;
+      const computerSelection = getComputerChoice();
+      const results = playRound(playerSelection, computerSelection);
+      playerCount += results[0];
+      computerCount += results[1];
+      const thisRoundMessage = results[2];
+      const divForMessage = document.querySelector("#round-messages");
+      if (playerCount === 5 || computerCount === 5) {
+        gameOver = true;
+        if (playerCount > computerCount) {
+          message = `You beat the computer ${playerCount} to ${computerCount}.`;
+        } else if (computerCount > playerCount) {
+          message = `The computer beat you ${computerCount} to ${playerCount}.`;
+        } else {
+          message = `You tied with the computer at ${playerCount} points.`;
+        }
+        const endgameMessageElem = document.createElement("h4");
+        endgameMessageElem.textContent = message;
+        divForMessage.appendChild(endgameMessageElem);
+      } else {
+        const roundMessageElem = document.createElement("div");
+        roundMessageElem.textContent = thisRoundMessage;
+        divForMessage.appendChild(roundMessageElem);
+      }
+    });
+  });
+});
